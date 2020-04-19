@@ -35,20 +35,20 @@ class WebTestCase(unittest.TestCase):
 
         return response
 
-    def test_post_yields_method_not_allowed(self):
-        """
-        Sending a POST request should yield a 405 Method Not Allowed response
-        """
-
-        conn = http.client.HTTPConnection('localhost:10000')
-        conn.request('POST', '/')
-
-        response = conn.getresponse()
-
-        conn.close()
-
-        self.assertEqual(response.getcode(), 405)
-
+    # def test_post_yields_method_not_allowed(self):
+    #     """
+    #     Sending a POST request should yield a 405 Method Not Allowed response
+    #     """
+    #
+    #     conn = http.client.HTTPConnection('localhost:10000')
+    #     conn.request('POST', '/')
+    #
+    #     response = conn.getresponse()
+    #
+    #     conn.close()
+    #
+    #     self.assertEqual(response.getcode(), 405)
+    #
 
     def test_get_sample_text_content(self):
         """
@@ -190,7 +190,7 @@ class WebTestCase(unittest.TestCase):
 
     def test_ok_response_at_root_index(self):
         """
-        A call to / at least yields a 200 OK response 
+        A call to / at least yields a 200 OK response
         """
 
         directory = ''
