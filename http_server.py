@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import socket
 import sys
 import traceback
@@ -35,7 +37,7 @@ def response_method_not_allowed():
 
     # TODO: Implement response_method_not_allowed
     return b'\r\n'.join([
-        b'HTTP/1.1 405 Method Not Allowed,
+        b'HTTP/1.1 405 Method Not Allowed',
         b'Content-Type: text/plain',
         b'',
         b'405 Method Not Allowed'
@@ -124,6 +126,10 @@ def response_path(path):
 
 
 def server(log_buffer=sys.stderr):
+    """
+    Creates a server socket, binds it to address, waits for client response
+    and then executes reponse
+    """
     address = ('127.0.0.1', 10000)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -152,33 +158,30 @@ def server(log_buffer=sys.stderr):
                 # TODO: Use parse_request to retrieve the path from the request.
                 try:
                     path = parse_request(request)
-                except NotImplementedError:
-                    response = response_method_not_allowed()
+
                 # TODO: Use response_path to retrieve the content and the mimetype,
                 # based on the request path.
-                    try:
-                        content, mime_type = response_path(path)
+                    content, mime_type = response_path(path)
 
                 # TODO; If parse_request raised a NotImplementedError, then let
                 # response be a method_not_allowed response. If response_path raised
                 # a NameError, then let response be a not_found response. Else,
-                # use the content and mimetype from response_path to build a 
+                # use the content and mimetype from response_path to build a
                 # response_ok.
-
-                        response = response_ok(
-                            body=content,
-                            mimetype=mime_type
-                        )
-                    except NameError:
-                        response = response_not_found()
-
-
+                    response = response_ok(
+                        body=content,
+                        mimetype=mime_type
+                    )
+                except NotImplementedError:
+                    response = response_method_not_allowed()
+                except NameError:
+                    response = response_not_found()
 
                 conn.sendall(response)
             except:
                 traceback.print_exc()
             finally:
-                conn.close() 
+                conn.close()
 
     except KeyboardInterrupt:
         sock.close()
@@ -190,5 +193,3 @@ def server(log_buffer=sys.stderr):
 if __name__ == '__main__':
     server()
     sys.exit(0)
-
-
