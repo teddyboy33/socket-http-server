@@ -34,7 +34,12 @@ def response_method_not_allowed():
     """Returns a 405 Method Not Allowed response"""
 
     # TODO: Implement response_method_not_allowed
-    return b'HTTP/1.1 405 Method Not Allowed'
+    return b'\r\n'.join([
+        b'HTTP/1.1 405 Method Not Allowed,
+        b'Content-Type: text/plain',
+        b'',
+        b'405 Method Not Allowed'
+    ])
 
 
 def response_not_found():
@@ -145,30 +150,31 @@ def server(log_buffer=sys.stderr):
                 print("Request received:\n{}\n\n".format(request))
 
                 # TODO: Use parse_request to retrieve the path from the request.
-
-                path = parse_request(request)
-
+                try:
+                    path = parse_request(request)
+                except NotImplementedError:
+                    response = response_method_not_allowed()
                 # TODO: Use response_path to retrieve the content and the mimetype,
                 # based on the request path.
-                try:
-                    content, mime_type = response_path(path)
+                    try:
+                        content, mime_type = response_path(path)
 
                 # TODO; If parse_request raised a NotImplementedError, then let
                 # response be a method_not_allowed response. If response_path raised
                 # a NameError, then let response be a not_found response. Else,
                 # use the content and mimetype from response_path to build a 
                 # response_ok.
-                    response = response_ok(
-                        body=content,
-                        mimetype=mime_type
-                    )
-                except NameError:
-                    response = response_not_found()
-                finally:
+
+                        response = response_ok(
+                            body=content,
+                            mimetype=mime_type
+                        )
+                    except NameError:
+                        response = response_not_found()
 
 
 
-                    conn.sendall(response)
+                conn.sendall(response)
             except:
                 traceback.print_exc()
             finally:
